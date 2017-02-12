@@ -60,7 +60,7 @@ function moveFrameToElement(frame, el) {
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
-        console.log('setting src:', frame.id);
+        console.log('setting onload:', frame.id);
         // var doc;
         // try {
         //     doc = frame.contentDocument || frame.contentWindow.document;
@@ -73,7 +73,7 @@ function moveFrameToElement(frame, el) {
         // frame.addEventListener('load', function() {
         frame.addEventListener('load', function() {
             // debugger;
-            console.log('frame.contentwindow onload:', frame.id);
+            console.log('onload:', frame.id);
             showFrame(frame);
             // frame.removeEventListener(this, false);
         // };
@@ -81,6 +81,7 @@ function moveFrameToElement(frame, el) {
         // }
         // frame.src = src;
     }
+    console.log('setting src:', frame.id);
     frame.src = src;
 }
 
