@@ -69,14 +69,15 @@ function moveFrameToElement(frame, el) {
         //         showFrame(frame);
         //     }
         // } catch(e) {
-        frame.onload = function() {
+        // frame.onload = function() {
         // frame.addEventListener('load', function() {
+        frame.contentWindow.addEventListener('load', function() {
             // debugger;
-            console.log('onload:', frame.id);
+            console.log('frame.contentwindow onload:', frame.id);
             showFrame(frame);
             // frame.removeEventListener(this, false);
-        };
-        // }, true);
+        // };
+        }, true);
         // }
         // frame.src = src;
     }
