@@ -70,7 +70,7 @@ function moveFrameToElement(frame, el) {
         //     }
         // } catch(e) {
         // frame.onload = function() {
-        frame.contentWindow.addEventListener('load', function() {
+        frame.contentWindow.document.addEventListener('load', function() {
             // debugger;
             console.log('onload:', frame.id);
             showFrame(frame);
