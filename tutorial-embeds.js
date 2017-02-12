@@ -71,18 +71,18 @@ function moveFrameToElement(frame, el) {
         // } catch(e) {
         // frame.onload = function() {
         // frame.addEventListener('load', function() {
-        frame.addEventListener('load', function() {
-            // debugger;
-            console.log('onload:', frame.id);
-            showFrame(frame);
-            // frame.removeEventListener(this, false);
-        // };
-        }, true);
+        frame.addEventListener('load', frameLoad(frame), true);
         // }
         // frame.src = src;
     }
     console.log('setting src:', frame.id);
     frame.src = src;
+}
+
+function frameLoad(frame) {
+    frame.removeEventListener('load', frameLoad(frame), true);
+    console.log('onload:', frame.id);
+    showFrame(frame);
 }
 
 function showFrame(frame) {
