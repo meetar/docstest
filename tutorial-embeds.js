@@ -73,8 +73,8 @@ function moveFrameToElement(frame, el) {
             frame.addEventListener('load', function() {
                 console.log('onload:', frame.id);
                 showFrame(frame);
-                frame.removeEventListener(this, true);
-            }, true);
+                frame.removeEventListener(this, false);
+            }, false);
         // }
         frame.src = src;
     }
