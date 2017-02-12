@@ -69,14 +69,14 @@ function moveFrameToElement(frame, el) {
         //         showFrame(frame);
         //     }
         // } catch(e) {
-        // frame.onload = function() {
-        frame.contentWindow.document.addEventListener('load', function() {
+        frame.onload = function() {
+        // frame.addEventListener('load', function() {
             // debugger;
             console.log('onload:', frame.id);
             showFrame(frame);
             // frame.removeEventListener(this, false);
-        // };
-        }, true);
+        };
+        // }, true);
         // }
         // frame.src = src;
     }
@@ -112,8 +112,8 @@ function loadOldCode(frame, el) {
     // get source from the element's "code" attribute
     var code = el.getAttribute("code");
     if (typeof code == 'undefined') return false;
-    // frame.onload = function() {
-    frame.addEventListener('load', function() {
+    frame.onload = function() {
+    // frame.addEventListener('load', function() {
         console.log(frame.id, "loadOldCode onload");
         // set the value of the codeMirror editor
         var editor = frame.contentWindow.editor;
@@ -191,7 +191,8 @@ function loadOldCode(frame, el) {
 
         // show iframe
         showFrame(frame);
-    }, true);
+    // }, true);
+    };
 }
 
 window.onload = function() {
