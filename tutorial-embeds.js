@@ -70,7 +70,7 @@ function moveFrameToElement(frame, el) {
         //     }
         // } catch(e) {
         // frame.onload = function() {
-        frame.addEventListener('load', function() {
+        frame.contentWindow.addEventListener('load', function() {
             // debugger;
             console.log('onload:', frame.id);
             showFrame(frame);
@@ -95,9 +95,9 @@ function checkIframeLoaded(frame) {
 
     // Check if loading is complete
     if (  iframeDoc.readyState  == 'complete' ) {
-        //iframe.contentWindow.alert("Hello");
+        console.log("Hello");
         frame.contentWindow.onload = function(){
-            alert("now loaded:", frame);
+            console.log("now loaded:", frame);
         };
         // The loading is complete, call the function we want executed once the iframe is loaded
         return;
