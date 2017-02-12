@@ -71,6 +71,7 @@ function moveFrameToElement(frame, el) {
         //     }
         // } catch(e) {
             frame.addEventListener('load', function() {
+                debugger;
                 console.log('onload:', frame.id);
                 showFrame(frame);
                 frame.removeEventListener(this, false);
