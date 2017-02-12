@@ -51,8 +51,7 @@ function moveFrameToElement(frame, el) {
     // get the source if it has been set
     var src;
     if (typeof el.getAttribute("source") != 'undefined') {
-        console.log('loading src:', el.getAttribute("source"))
-        console.log('setting src:', frame.id)
+        console.log('getting src:', el.getAttribute("source"))
         src = el.getAttribute("source");
     }
     // if code was saved previously, load it
@@ -62,6 +61,7 @@ function moveFrameToElement(frame, el) {
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
+        console.log('setting src:', frame.id);
         // var doc;
         // try {
         //     doc = frame.contentDocument || frame.contentWindow.document;
@@ -70,12 +70,14 @@ function moveFrameToElement(frame, el) {
         //         showFrame(frame);
         //     }
         // } catch(e) {
-            frame.addEventListener('load', function() {
-                debugger;
-                console.log('onload:', frame.id);
-                showFrame(frame);
-                frame.removeEventListener(this, false);
-            }, false);
+        frame.onload = function() {
+        // frame.addEventListener('load', function() {
+            debugger;
+            console.log('onload:', frame.id);
+            showFrame(frame);
+            // frame.removeEventListener(this, false);
+        };
+        // , false);
         // }
         frame.src = src;
     }
