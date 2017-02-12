@@ -60,15 +60,15 @@ function moveFrameToElement(frame, el) {
     } else {
         // show the iframe once it's loaded
         var doc;
-        try {
-            doc = frame.contentDocument || frame.contentWindow.document;
-            if (doc.readyState == 'complete') showFrame(frame);
-        } catch(e) {
-            frame.onload = function() {
+        // try {
+        //     doc = frame.contentDocument || frame.contentWindow.document;
+        //     if (doc.readyState == 'complete') showFrame(frame);
+        // } catch(e) {
+            frame.addEventListener('load', function() {
                 console.log('onload:', frame);
                 showFrame(frame);
-            }
-        }
+            }, true);
+        // }
     }
 }
 
