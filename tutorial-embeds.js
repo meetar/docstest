@@ -42,6 +42,10 @@ function distanceFromCenter(el) {
     return Math.abs(windowCenter - elementCenter);
 }
 
+var frameLoad = {'load', function() {
+                console.log('onload:', frame);
+                showFrame(frame);
+            }, true}
 // move iframe to target element
 function moveFrameToElement(frame, el) {
     if (typeof el == 'undefined') return false;
@@ -64,10 +68,7 @@ function moveFrameToElement(frame, el) {
         //     doc = frame.contentDocument || frame.contentWindow.document;
         //     if (doc.readyState == 'complete') showFrame(frame);
         // } catch(e) {
-            frame.addEventListener('load', function() {
-                console.log('onload:', frame);
-                showFrame(frame);
-            }, true);
+            frame.addEventListener(frameLoad);
         // }
     }
 }
@@ -76,6 +77,7 @@ function showFrame(frame) {
     frame.style.visibility = "visible";
     // for safari
     frame.style.height = editorheight+"px";
+    frame.removeEventListener(frameLoad);
 }
 
 function checkIframeLoaded(frame) {
