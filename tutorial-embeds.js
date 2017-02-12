@@ -42,10 +42,6 @@ function distanceFromCenter(el) {
     return Math.abs(windowCenter - elementCenter);
 }
 
-var frameLoad = {'load', function() {
-                console.log('onload:', frame);
-                showFrame(frame);
-            }, true}
 // move iframe to target element
 function moveFrameToElement(frame, el) {
     if (typeof el == 'undefined') return false;
@@ -81,7 +77,6 @@ function showFrame(frame) {
     frame.style.visibility = "visible";
     // for safari
     frame.style.height = editorheight+"px";
-    frame
 }
 
 function checkIframeLoaded(frame) {
