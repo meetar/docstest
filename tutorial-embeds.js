@@ -68,12 +68,31 @@ function moveFrameToElement(frame, el) {
     }
 }
 
+function checkIframeLoaded(frame) {
+    // Get a handle to the iframe element
+    var iframeDoc = frame.contentDocument || frame.contentWindow.document;
+
+    // Check if loading is complete
+    if (  iframeDoc.readyState  == 'complete' ) {
+        //iframe.contentWindow.alert("Hello");
+        frame.contentWindow.onload = function(){
+            alert("now loaded:", frame);
+        };
+        // The loading is complete, call the function we want executed once the iframe is loaded
+        return;
+    } 
+
+    // If we are here, it is not loaded. Set things up so we check the status again in 100 milliseconds
+    window.setTimeout(checkIframeLoaded(frame), 100);
+}
+
 // load previously-saved code into an editor
 function loadOldCode(frame, el) {
     // get source from the element's "code" attribute
     var code = el.getAttribute("code");
     if (typeof code == 'undefined') return false;
-    frame.onload = function() {
+    // frame.onload = function() {
+    frame.addEventListener('load', function() {
         // set the value of the codeMirror editor
         var editor = frame.contentWindow.editor;
         var scene, layer;
@@ -152,7 +171,7 @@ function loadOldCode(frame, el) {
         frame.style.visibility = "visible";
         // for safari
         frame.style.height = editorheight+"px";
-    }
+    }, true);
 }
 
 window.onload = function() {
