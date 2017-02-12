@@ -71,7 +71,7 @@ function moveFrameToElement(frame, el) {
         // } catch(e) {
         // frame.onload = function() {
         // frame.addEventListener('load', function() {
-        frame.addEventListener('load', frameLoad(frame), true);
+        frame.addEventListener('load', function() {frameLoad(frame);}, true);
         // }
         // frame.src = src;
     }
@@ -80,7 +80,7 @@ function moveFrameToElement(frame, el) {
 }
 
 function frameLoad(frame) {
-    frame.removeEventListener('load', frameLoad(frame), true);
+    frame.removeEventListener('load', function() {frameLoad(frame);}, true);
     console.log('onload:', frame.id);
     showFrame(frame);
 }
