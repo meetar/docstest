@@ -68,7 +68,11 @@ function moveFrameToElement(frame, el) {
         //     doc = frame.contentDocument || frame.contentWindow.document;
         //     if (doc.readyState == 'complete') showFrame(frame);
         // } catch(e) {
-            frame.addEventListener(frameLoad);
+            frame.addEventListener('load', function() {
+                console.log('onload:', frame);
+                showFrame(frame);
+                frame.removeEventListener(this);
+            }, true);
         // }
     }
 }
@@ -77,7 +81,7 @@ function showFrame(frame) {
     frame.style.visibility = "visible";
     // for safari
     frame.style.height = editorheight+"px";
-    frame.removeEventListener(frameLoad);
+    frame
 }
 
 function checkIframeLoaded(frame) {
