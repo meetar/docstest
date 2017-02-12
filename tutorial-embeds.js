@@ -71,7 +71,7 @@ function moveFrameToElement(frame, el) {
         // } catch(e) {
         // frame.onload = function() {
         // frame.addEventListener('load', function() {
-        frame.contentWindow.addEventListener('load', function() {
+        frame.addEventListener('load', function() {
             // debugger;
             console.log('frame.contentwindow onload:', frame.id);
             showFrame(frame);
