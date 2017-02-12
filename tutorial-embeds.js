@@ -59,13 +59,23 @@ function moveFrameToElement(frame, el) {
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
-        frame.onload = function() {
-            console.log('onload:', frame);
-            frame.style.visibility = "visible";
-            // for safari
-            frame.style.height = editorheight+"px";
+        var doc;
+        try {
+            doc = frame.contentDocument || frame.contentWindow.document;
+            if (doc.readyState == 'complete') showFrame(frame);
+        } catch(e) {
+            frame.onload = function() {
+                console.log('onload:', frame);
+                showFrame(frame);
+            }
         }
     }
+}
+
+function showFrame(frame) {
+    frame.style.visibility = "visible";
+    // for safari
+    frame.style.height = editorheight+"px";
 }
 
 function checkIframeLoaded(frame) {
@@ -168,9 +178,7 @@ function loadOldCode(frame, el) {
         }
 
         // show iframe
-        frame.style.visibility = "visible";
-        // for safari
-        frame.style.height = editorheight+"px";
+        showFrame(frame);
     }, true);
 }
 
