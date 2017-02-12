@@ -63,7 +63,7 @@ function moveFrameToElement(frame, el) {
         try {
             doc = frame.contentDocument || frame.contentWindow.document;
             if (doc.readyState == 'complete') {
-                console.log('src srt?', frame.src == el.getAttribute("source"));
+                console.log('src set?\n', frame.src, '==?\n', el.getAttribute("source"));
                 showFrame(frame);
             }
         } catch(e) {
