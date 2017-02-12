@@ -50,14 +50,17 @@ function moveFrameToElement(frame, el) {
     frame.style.left = el.offsetLeft+"px";
     // get the source if it has been set
     if (typeof el.getAttribute("source") != 'undefined') {
+        console.log('loading src:', el.getAttribute("source"))
         frame.src = el.getAttribute("source");
     }
     // if code was saved previously, load it
     if (el.getAttribute("code") !='' && el.getAttribute("code") != 'null') {
+        console.log('going to loadOldCode');
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
         frame.onload = function() {
+            console.log('onload:', frame);
             frame.style.visibility = "visible";
             // for safari
             frame.style.height = editorheight+"px";
