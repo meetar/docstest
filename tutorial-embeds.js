@@ -57,7 +57,6 @@ function moveFrameToElement(frame, el) {
     // if code was saved previously, load it
     if (el.getAttribute("code") !='' && el.getAttribute("code") != 'null') {
         console.log('going to loadOldCode:', frame.id);
-        frame.src = src;
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
@@ -70,17 +69,18 @@ function moveFrameToElement(frame, el) {
         //         showFrame(frame);
         //     }
         // } catch(e) {
-        frame.onload = function() {
-        // frame.addEventListener('load', function() {
-            debugger;
+        // frame.onload = function() {
+        frame.addEventListener('load', function() {
+            // debugger;
             console.log('onload:', frame.id);
             showFrame(frame);
             // frame.removeEventListener(this, false);
-        };
-        // , false);
+        // };
+        }, true);
         // }
-        frame.src = src;
+        // frame.src = src;
     }
+    frame.src = src;
 }
 
 function showFrame(frame) {
@@ -114,6 +114,7 @@ function loadOldCode(frame, el) {
     if (typeof code == 'undefined') return false;
     // frame.onload = function() {
     frame.addEventListener('load', function() {
+        console.log(frame.id, "loadOldCode onload");
         // set the value of the codeMirror editor
         var editor = frame.contentWindow.editor;
         var scene, layer;
