@@ -49,30 +49,34 @@ function moveFrameToElement(frame, el) {
     frame.style.top = newtop+"px";
     frame.style.left = el.offsetLeft+"px";
     // get the source if it has been set
+    var src;
     if (typeof el.getAttribute("source") != 'undefined') {
         console.log('loading src:', el.getAttribute("source"))
-        frame.src = el.getAttribute("source");
+        console.log('setting src:', frame.id)
+        src = el.getAttribute("source");
     }
     // if code was saved previously, load it
     if (el.getAttribute("code") !='' && el.getAttribute("code") != 'null') {
-        console.log('going to loadOldCode');
+        console.log('going to loadOldCode:', frame.id);
+        frame.src = src;
         loadOldCode(frame, el);
     } else {
         // show the iframe once it's loaded
-        var doc;
-        try {
-            doc = frame.contentDocument || frame.contentWindow.document;
-            if (doc.readyState == 'complete') {
-                console.log('src set?\n', frame.src, '==?\n', el.getAttribute("source"));
-                showFrame(frame);
-            }
-        } catch(e) {
+        // var doc;
+        // try {
+        //     doc = frame.contentDocument || frame.contentWindow.document;
+        //     if (doc.readyState == 'complete') {
+        //         console.log(frame.id, 'readystate complete: src set?\n', frame.src, '==?\n', el.getAttribute("source"));
+        //         showFrame(frame);
+        //     }
+        // } catch(e) {
             frame.addEventListener('load', function() {
-                console.log('onload:', frame);
+                console.log('onload:', frame.id);
                 showFrame(frame);
                 frame.removeEventListener(this, true);
             }, true);
-        }
+        // }
+        frame.src = src;
     }
 }
 
