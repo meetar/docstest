@@ -42,17 +42,14 @@ function distanceFromCenter(el) {
     return Math.abs(windowCenter - elementCenter);
 }
 
+// moveFrameToElement's 'load' event callback
 function loadFunction() {
     // hide Play embed's "refresh" button
     // todo: figure out a way to make this load the original source
-    console.log('this.contentWindow:', this.contentWindow);
-    console.log('this.contentDocument:', this.contentDocument);
-    // if (this.contentWindow)
-    // this.contentDocument.body.style.backgroundColor = "green";
     this.contentDocument.getElementsByClassName("refresh-button")[0].style.display = "none";
     el = this.element;
     if (typeof el != 'undefined') {
-        // remove loader
+        // remove any loaders
         while (el.getElementsByClassName('demo-loading').length > 0) el.removeChild(el.getElementsByClassName('demo-loading')[0]);
     }
     checkVis();
@@ -63,7 +60,7 @@ function moveFrameToElement(frame, el) {
     if (typeof el == 'undefined') return false;
 
     // empty the iframe
-    frame.contentDocument.write("");
+    frame.contentDocument.write("<div height='100%'>&nbsp;</div>");
     // position iframe
     newtop = el.offsetTop;
     frame.style.top = newtop+"px";
@@ -79,6 +76,7 @@ function moveFrameToElement(frame, el) {
     }
 }
 
+// replace the value of a parameter in a url
 // http://stackoverflow.com/a/20420424/738675
 function replaceUrlParam(url, paramName, paramValue){
     if(paramValue == null)
@@ -91,17 +89,16 @@ function replaceUrlParam(url, paramName, paramValue){
 }
 
 function makeBlobURL(str) {
-    blob = new Blob([str]);
-    // blob = new Blob([str], {type: "text/plain"});
+    blob = new Blob([str], {type: "text/plain"});
     if(window.navigator.msSaveOrOpenBlob) {
         // ie/edge can't do it >:/
-        // return window.navigator.msSaveOrOpenBlob(blob, 'temp');
         return false;
     } else {
         var urlCreator = window.URL || window.webkitURL; 
         return urlCreator.createObjectURL(blob);
     }
 }
+
 // check visibility of demos - show ones closest to the center of the viewport and hide the others to go easy on the GPU
 function checkVis() {
     var elements = document.getElementsByClassName("demo");
