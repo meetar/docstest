@@ -45,8 +45,11 @@ function distanceFromCenter(el) {
 function loadFunction() {
     // hide Play embed's "refresh" button
     // todo: figure out a way to make this load the original source
-    this.contentWindow.document.getElementsByClassName("refresh-button")[0].style.display = "none";
-    showFrame(this);
+    console.log('this.contentWindow:', this.contentWindow);
+    console.log('this.contentDocument:', this.contentDocument);
+    // if (this.contentWindow)
+    // this.contentDocument.body.style.backgroundColor = "green";
+    this.contentDocument.getElementsByClassName("refresh-button")[0].style.display = "none";
     el = this.element;
     if (typeof el != 'undefined') {
         // remove loader
@@ -58,11 +61,13 @@ function loadFunction() {
 // move iframe to target element
 function moveFrameToElement(frame, el) {
     if (typeof el == 'undefined') return false;
+
+    // empty the iframe
+    frame.contentDocument.write("");
     // position iframe
     newtop = el.offsetTop;
     frame.style.top = newtop+"px";
     frame.style.left = el.offsetLeft+"px";
-
     // show the iframe once it's loaded
     frame.addEventListener('load', loadFunction, false);
 
@@ -72,17 +77,6 @@ function moveFrameToElement(frame, el) {
     } else {
         return new Error("no src set for demo frame:", frame);
     }
-    if (frame.contentWindow.document.readyState == 'complete') {
-        // Win/Chrome won't trigger multiple onloads on an iframe :/
-        // just show it
-        showFrame(frame);
-    }
-}
-
-function showFrame(frame) {
-    frame.style.visibility = "visible";
-    // for mac/safari and win/chrome
-    frame.style.height = editorheight+"px";
 }
 
 // http://stackoverflow.com/a/20420424/738675
@@ -96,6 +90,18 @@ function replaceUrlParam(url, paramName, paramValue){
     return url + (url.indexOf('?')>0 ? '&' : '?') + paramName + '=' + paramValue 
 }
 
+function makeBlobURL(str) {
+    blob = new Blob([str]);
+    // blob = new Blob([str], {type: "text/plain"});
+    if(window.navigator.msSaveOrOpenBlob) {
+        // ie/edge can't do it >:/
+        // return window.navigator.msSaveOrOpenBlob(blob, 'temp');
+        return false;
+    } else {
+        var urlCreator = window.URL || window.webkitURL; 
+        return urlCreator.createObjectURL(blob);
+    }
+}
 // check visibility of demos - show ones closest to the center of the viewport and hide the others to go easy on the GPU
 function checkVis() {
     var elements = document.getElementsByClassName("demo");
@@ -122,10 +128,6 @@ function checkVis() {
     for (var i=0; i < winners.length; i++) {
         // if there's already a frame there, move on
         if (winners[i].demoframe != null) {
-            if (winners[i].demoframe.contentWindow.document.readyState == 'complete' && winners[i].demoframe.style.height == "1px") {
-                // frame is hiding, force a refresh
-                winners[i].demoframe.src = winners[i].demoframe.src;
-            }
             continue;
         }
         // place each frame at a winner
@@ -142,20 +144,15 @@ function checkVis() {
             // if the safeword was triggered, move to the next winner
             if (safeword) continue;
 
-            // hide the demoframe
-            // Mac/Safari can't set iframe visibility,
-            // Win/Chrome can't set an iframe height to ""
-            // so just squash it down :/
-            frames[j].style.height = "1px";
             // remove any event listeners in case it's in the middle of loading something
             frames[j].removeEventListener('load', loadFunction, false);
-            // save current code state in a property called "code" on the parent div
+            // save current code state to a BlobURL, set it as the parent's new "source"
             if (typeof frames[j].contentWindow.scene != 'undefined') {
-                blob = new Blob([frames[j].contentWindow.editor.getValue()], {type: "text/plain"})
-                var urlCreator = window.URL || window.webkitURL; 
-                var newsrc = urlCreator.createObjectURL(blob);
-                var newsource = replaceUrlParam(frames[j].element.getAttribute("source"), "scene", newsrc);
-                frames[j].element.setAttribute("source", newsource);
+                newsrc = makeBlobURL(frames[j].contentWindow.editor.getValue());
+                if (newsrc) {
+                    newsource = replaceUrlParam(frames[j].element.getAttribute("source"), "scene", newsrc);
+                    frames[j].element.setAttribute("source", newsource);
+                }
             }
             // add demoframe and winner as properties of each other for tracking
             frames[j].element = winners[i];
