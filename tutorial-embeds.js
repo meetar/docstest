@@ -15,16 +15,10 @@ Example div:
 
 */
 
-// set number of editor frames to use
-var editorheight = document.getElementsByClassName("demo")[0].offsetHeight;
-var numberOfFrames = Math.floor(window.innerHeight / editorheight);
-// minimum of 1, maximum of 3
-numberOfFrames = Math.min(4, Math.max(1, numberOfFrames));
-
-// set variables
 var frames = [];
 var winners = [];
 var loaders = [];
+var numberOfFrames = 3;
 
 // find distance of element from center of viewport
 function distanceFromCenter(el) {
@@ -42,87 +36,48 @@ function distanceFromCenter(el) {
     return Math.abs(windowCenter - elementCenter);
 }
 
-// move iframe to target element
 function moveFrameToElement(frame, el) {
     if (typeof el == 'undefined') return false;
     newtop = el.offsetTop;
     frame.style.top = newtop+"px";
     frame.style.left = el.offsetLeft+"px";
     // get the source if it has been set
-    var src;
     if (typeof el.getAttribute("source") != 'undefined') {
-        console.log('getting src:', el.getAttribute("source"))
-        src = el.getAttribute("source");
+        frame.src = el.getAttribute("source");
     }
     // if code was saved previously, load it
     if (el.getAttribute("code") !='' && el.getAttribute("code") != 'null') {
-        console.log('going to loadOldCode:', frame.id);
+        console.log('loading old code');
         loadOldCode(frame, el);
     } else {
+        console.log('waiting for frame to load');
         // show the iframe once it's loaded
-        console.log('setting onload:', frame.id);
-        // var doc;
-        // try {
-        //     doc = frame.contentDocument || frame.contentWindow.document;
-        //     if (doc.readyState == 'complete') {
-        //         console.log(frame.id, 'readystate complete: src set?\n', frame.src, '==?\n', el.getAttribute("source"));
-        //         showFrame(frame);
-        //     }
-        // } catch(e) {
-        // frame.onload = function() {
-        // frame.addEventListener('load', function() {
-        frame.addEventListener('load', function() {frameLoad(frame);}, true);
-        // }
-        // frame.src = src;
+        frame.onload = function() {
+            frame.style.visibility = "visible";
+            // for safari
+            frame.style.height = "";
+        }
     }
-    console.log('setting src:', frame.id);
-    frame.src = src;
 }
 
-function frameLoad(frame) {
-    frame.removeEventListener('load', function() {frameLoad(frame);}, true);
-    console.log('onload:', frame.id);
-    showFrame(frame);
-}
-
-function showFrame(frame) {
-    frame.style.visibility = "visible";
-    // for safari
-    frame.style.height = editorheight+"px";
-}
-
-function checkIframeLoaded(frame) {
-    // Get a handle to the iframe element
-    var iframeDoc = frame.contentDocument || frame.contentWindow.document;
-
-    // Check if loading is complete
-    if (  iframeDoc.readyState  == 'complete' ) {
-        console.log("Hello");
-        frame.contentWindow.onload = function(){
-            console.log("now loaded:", frame);
-        };
-        // The loading is complete, call the function we want executed once the iframe is loaded
-        return;
-    } 
-
-    // If we are here, it is not loaded. Set things up so we check the status again in 100 milliseconds
-    window.setTimeout(checkIframeLoaded(frame), 100);
-}
-
-// load previously-saved code into an editor
 function loadOldCode(frame, el) {
-    // get source from the element's "code" attribute
+    // get source from the previously-saved blobURL
     var code = el.getAttribute("code");
     if (typeof code == 'undefined') return false;
     frame.onload = function() {
-    // frame.addEventListener('load', function() {
-        console.log(frame.id, "loadOldCode onload");
+        // if the contentWindow doesn't exist, bail
+        if (typeof frame.contentWindow == 'undefined') {
+            console.log('is frame.contentWindow undefined?', frame.contentWindow);
+            return false;
+        }
         // set the value of the codeMirror editor
         var editor = frame.contentWindow.editor;
-        var scene, layer;
+        var scene;
+        var layer;
 
         // wait for Tangram's leafletLayer to be defined
         if (frame.contentWindow.layer) {
+            console.log('layer already exists')
             layer = frame.contentWindow.layer;
             setTimeout(function() {
                 // use a setTimeout 0 to make this a separate entry in the browser's event queue, so it won't happen until the editor is ready
@@ -137,19 +92,23 @@ function loadOldCode(frame, el) {
                     return this._layer;
                 },
                 set: function(val) {
+                    console.log('waited for layer')
                     this._layer = val;
+                    console.log('layer val:', val);
                     layer = val;
                     getScene();
                 }
             });
         }
 
-        // wait for Tangram's scene object to be defined
         function getScene(code) {
             try {
                 scene = layer.scene;
+                console.log('scene?', scene);
                 setCode(code);
             } catch(e) {
+                console.log("scene doesn't exist, waiting");
+                console.log('layer:', layer);
                 // wait for the Tangram scene object to be defined
                 Object.defineProperty(layer, 'scene', {
                     configurable: true,
@@ -159,6 +118,7 @@ function loadOldCode(frame, el) {
                         return this._scene;
                     },
                     set: function(val) {
+                        console.log('waited for scene')
                         this._scene = val;
                         scene = val;
                         setCode(code);
@@ -169,6 +129,7 @@ function loadOldCode(frame, el) {
 
         // create an event
         var load_event = { load: function() {
+                console.log('waited for tangram')
                 // immediately unsubscribe
                 scene.unsubscribe(this);
                 // put the old code in the editor pane
@@ -176,25 +137,28 @@ function loadOldCode(frame, el) {
             }
         };
 
-        // trigger the code-setting mechanism
+
         function setCode(code) {
             if (typeof scene == 'undefined') {
-                // still no scene - porblem
+                console.log("still no scene >:(");
                 return false;
             }
             if (scene && scene.initializing) {
+                console.log("tangram exists but ain't ready")
                 // Tangram ain't ready - subscribe to its load_event
                 scene.subscribe(load_event);
             } else {
+                console.log('tangram already exists')
                 // put the old code in the editor pane
                 editor.doc.setValue(code);
             }
         }
 
         // show iframe
-        showFrame(frame);
-    // }, true);
-    };
+        frame.style.visibility = "visible";
+        // for safari
+        frame.style.height = "";
+    }
 }
 
 window.onload = function() {
@@ -215,7 +179,8 @@ window.onload = function() {
 
     function throttle(fn, threshhold, scope) {
       threshhold || (threshhold = 250);
-      var last, deferTimer;
+      var last,
+          deferTimer;
       return function () {
         var context = scope || this;
 
